@@ -3,14 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 
-class Square extends React.Component {
-    render() {
-        return (
-            <button className="square" onClick={() => this.props.onClick(this.props.value)}>
-                {this.props.value}
-            </button>
+function Square(props){
+    return (
+        <button className="square" onClick={() => props.onClick(props.value)}>
+            {props.value}
+        </button>
     );
-    }
 }
 
 class Board extends React.Component {
@@ -18,15 +16,46 @@ class Board extends React.Component {
         super(props);
         this.state = {
             squares: Array(9).fill(null),
+            isTurnX: true
         };
     }
 
     onSquareClick(index) {
         const buffer = this.state.squares.slice();
-        buffer[index] = 'X';
-        this.setState({squares: buffer});
-        console.log('Clicked!!: ' + this.state.squares);
+        if (this.state.isTurnX) {
+            buffer[index] = 'X';
+        } else {
+            buffer[index] = 'O';
+        }
+        const newTurn = !this.state.isTurnX;
+
+
+        this.setState({
+            isTurnX: newTurn,
+            squares: buffer
+        });
+
+        if (this.checkForWin(buffer)) {
+
+        }
     }
+
+
+    checkForWin(boardState) {
+        // console.log('Clicked!!: ' + this.state.squares + ' ' + this.state.isTurnX);
+
+        // count to see if there's 3 of the clicked square.
+        const turn = (this.state.isTurnX? 'X': 'O');
+        if (boardState.filter(k => k === turn).length !== 3) {
+            console.log('To small - keep going.');
+            return;
+        }
+
+        console.log(boardState);
+
+        return true;
+    }
+
 
     renderSquare(i) {
         return (
@@ -37,7 +66,7 @@ class Board extends React.Component {
     }
 
     render() {
-        const status = 'Next player: X';
+        const status = 'Next player: ' + (this.state.isTurnX ? 'X' : 'O');
 
         return (
             <div>
